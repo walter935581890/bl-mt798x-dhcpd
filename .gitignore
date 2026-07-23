@@ -49,4 +49,5 @@ node_modules/
 
 # Upstream
 u-boot-*/
+mtk-*/
 *.zip

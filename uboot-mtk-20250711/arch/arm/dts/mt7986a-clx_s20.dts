@@ -8,7 +8,7 @@
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-	model = "mt7986-clx_s20p";
+	model = "CLX S20 Series";
 	compatible = "mediatek,mt7986", "mediatek,mt7986-rfb";
 
 	chosen {

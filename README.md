@@ -50,9 +50,9 @@ You can configure the features you need.
 sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev device-tree-compiler qemu-user-static nodejs npm
 ```
 
-> If you want to build for arm v7l devices, you also need to install `gcc-arm-linux-gnueabi`
+> If you want to build for armv7l devices, you also need to install `gcc-arm-linux-gnueabi`
 >
-> The failsafe web UI assets are minified at build time. If you build the U-Boot manually, run `npm install` once in `uboot-mtk-20250711/failsafe/embedded` so the local minifier dependency is available(It will auto install by `build.sh` tool).
+> The failsafe web UI assets are minified at build time. If you build U-Boot manually, run `npm install` once in `uboot-mtk-20250711/failsafe/embedded` so the local minifier dependency is available. It will be installed automatically by the `build.sh` tool.
 
 ## Build
 
@@ -121,11 +121,11 @@ make boards VERSION=2025
 
 | Variant | Description | Adapted Firmware |
 | --- | --- | --- |
-| default | Recommand for devices with stock/custom partition layout, enable MTK-NMBM, suitable for most users | stock/custom layout firmware |
-| nonmbm | Recommand for devices with stock/custom partition layout, with MTK-NMBM disabled | stock/custom layout firmware without MTK-NMBM |
-| ubootmod | With some modifications for better compatibility with OpenWrt/ImmortalWrt firmware | ubi/ubootmod layout firmware |
+| default | Recommend for devices with stock/custom partition layout, enable MTK-NMBM, suitable for most users | stock/custom layout firmware |
+| nonmbm | Recommend for devices with stock/custom partition layout, with MTK-NMBM disabled | stock/custom layout firmware without MTK-NMBM |
+| ubootmod | With some modifications for better compatibility with OpenWrt/ImmortalWrt firmware | ubootmod layout firmware |
 | ubi | Designed for UBI layout(such as: `spi-nand0:1024k(bl2),-(ubi)`) | ubi layout firmware |
-| openwrt | From OpenWrt official respository, it has no failsafe web UI temporarily | OpenWrt official firmware |
+| openwrt | From the official OpenWrt repository, it currently has no failsafe web UI | OpenWrt official firmware |
 
 ---
 
@@ -150,7 +150,7 @@ For direct `*.sh` usage details, please see [`doc/tools.md`](./document/tools.md
 
 ## Use Actions to build
 
-You need folk this repository to your own account, and then you can use the Actions to build the binaries, and the generated files will be in the `artifacts` or `releases` page.
+You need to fork this repository to your own account, and then you can use Actions to build the binaries. The generated files will be in the `artifacts` or `releases` page.
 
 - [x] Build FIP
   - [x] single-board/all/all-mt798x
@@ -171,7 +171,7 @@ You need folk this repository to your own account, and then you can use the Acti
 
 ## Generate GPT with python2.7
 
-> install denpendencies
+> install dependencies
 
 ```bash
 sudo apt-get install python2 python2-dev
@@ -191,7 +191,7 @@ When you enable `SDMMC=1` (e.g. `make gpt SDMMC=1`), the generated GPT image wil
 
 ### Show GPT info
 
-Create a directory named `mt798x_gpt_bin` in the respository root directory, and put your GPT bin files in it.
+Create a directory named `mt798x_gpt_bin` in the repository root directory, and put your GPT bin files in it.
 
 Then run:
 
@@ -221,11 +221,11 @@ make gpt DRAW=1
 make atf
 ```
 
-then will generate BL2 in the `output` directory. Normally, it will generate ramboot BL2.
+Then it will generate BL2 in the `output` directory. Normally, it will generate a ramboot BL2.
 
 ### Overclocking profiles
 
-Adujsting ARMPLL frequency is a **very dangerous** operation.
+Adjusting ARMPLL frequency is a **very dangerous** operation.
 
 **It may cause some issues if you don't know what you are doing, and may cause your device to be bricked!**
 
@@ -247,7 +247,7 @@ So it's default to the stock frequency for safety, but you can enable the OC pro
   MT7986_ARMPLL_FREQ_2300=y
   ```
 
-> Limit each adjustment to 100MHz for mt798x, and limit each adjustment to 50MHz for mt762x, and it's recommended to adjust the frequency step by step, e.g. from 1.6GHz to 1.7GHz, then to 1.8GHz.
+> Limit each adjustment to 100MHz for mt798x, and limit each adjustment to 50MHz for mt762x. It is recommended to adjust the frequency step by step, e.g. from 1.6GHz to 1.7GHz, then to 1.8GHz.
 
 ARMPLL frequency range adjustment support for different platforms:
 
@@ -259,7 +259,7 @@ ARMPLL frequency range adjustment support for different platforms:
 
 ### Other Options
 
-these options are only work for `normal` directory
+These options only work for the `normal` directory.
 
 | Option | type | required | default | description |
 | --- | --- | --- | --- | --- |
@@ -283,15 +283,15 @@ There are two ways to build:
 
 - Use Action to build
 
-HOW to flash:
+How to flash:
 
-1. Use failsafe WEB UI to backup[1*](#endnote) **all your flash and partitions**, is very **important**!
+1. Use failsafe WEB UI to back up [1*](#endnote) **all your flash and partitions**; this is very **important**!
 
 2. Update BL2 in the WEB UI to flash the preloader provided by OpenWrt/ImmortalWrt ubootmod firmware.
 
 3. Update U-Boot in the WEB UI to flash the **FIT version FIP**.
 
-4. Use Flash Editor in the WEB UI to erase the UBI partition(or use command line: `mtd erase ubi`), this step is only for nand devices.
+4. Use Flash Editor in the WEB UI to erase the UBI partition (or use the command line: `mtd erase ubi`); this step is only for NAND devices.
 
 5. Try upgrade in firmware upgrade page with the OpenWrt/ImmortalWrt ubootmod firmware[2*](#endnote) [3*](#endnote), if not work, try next step.
 
@@ -303,13 +303,13 @@ HOW to flash:
 
 ## The best practices
 
-1. Use TTL tools to connect to the serial port, and use [MTK UARTBOOT](https://github.com/981213/mtk_uartboot/releases) to ramboot
+1. Use TTL tools to connect to the serial port, and use [MTK UARTBOOT](https://github.com/981213/mtk_uartboot/releases)/[MTK-LAUNCHPAD](https://github.com/Yuzhii0718/mtk-launchpad) to ramboot
 
-2. In Web UI, backup all your flash and partitions[1*](#endnote), is very important!
+2. In the Web UI, back up all your flash and partitions [1*](#endnote); this is very important!
 
 3. Update U-Boot in the WEB UI and upgrade firmware
 
-4. restore backup if something goes wrong
+4. Restore the backup if something goes wrong
 
 ### Change failsafe WEB UI start key
 
@@ -364,7 +364,7 @@ fw_setenv env_invalid 1 # Reset environment to default values in next boot
 fw_setenv failsafe 1 # Reboot to failsafe mode in next boot
 ```
 
-> need install `uboot-envtools` and configure `package/boot/uboot-envtools/files/mediatek_filogic` correctly for your device before compile firmware, otherwise the environment variables will not work.
+> You need to install `uboot-envtools` and configure `package/boot/uboot-envtools/files/mediatek_filogic` correctly for your device before compiling firmware; otherwise, the environment variables will not work.
 
 ### Telnet support
 
@@ -396,7 +396,7 @@ More information about the NMBM enablement can be found in the [unified env-cont
 
 Current branch only supports **2025/SP1/SP2**.
 
-**You can find old versions(such as 2022/2023/2024) in the "old-version" branch, but they may have some issues, so it's recommended to use current branch for better experience.**
+**You can find old versions (such as 2022/2023/2024) in the "old-version" branch, but they may have some issues, so it is recommended to use the current branch for a better experience.**
 
 - <https://cmi.hanwckf.top/p/mt798x-uboot-usage>
 
