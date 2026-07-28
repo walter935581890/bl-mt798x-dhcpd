@@ -53,7 +53,7 @@ extern int ubi_volume_write(char *volume, void *buf, loff_t offset, size_t size)
 extern int ubi_volume_read(char *volume, char *buf, loff_t offset, size_t size);
 extern int ubi_create_vol(char *volume, int64_t size, int dynamic, int vol_id,
 			  bool skipcheck);
-extern struct ubi_volume *ubi_find_volume(char *volume);
+extern struct ubi_volume *ubi_find_volume(const char *volume);
 extern int ubi_remove_vol(char *volume);
 
 extern struct ubi_device *ubi_devices[];
