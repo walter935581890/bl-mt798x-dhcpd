@@ -11,12 +11,21 @@ compile_atf.sh - Batch compile ATF (ARM Trusted Firmware) BL2 images
                  for MediaTek MT798x platforms
 
 Usage:
-  [OPTIONS] ./compile_atf.sh
+  ./compile_atf.sh [CONFIG...]
 
 Description:
-  Scans all .config files under ATFCFG_DIR (and its CFG_SUBDIR subdirectory),
-  then builds the ATF BL2 firmware image for each config. Output files are
-  placed in OUTPUT_DIR with md5sum embedded in the filename.
+  Builds ATF BL2 firmware images for config files under ATFCFG_DIR.
+  Without arguments, all .config files are built.  Specify one or more
+  config names to build only those configs.
+
+Arguments:
+  CONFIG              Config name(s) to build (optional).
+                      Can be a plain name (e.g. "mt7981-ddr3-bga-ram"
+                      matches "mt798x_atf/mt7981-ddr3-bga-ram.config")
+                      or a relative sub-path (e.g. "mt7986/mt7986-ddr3-ram"
+                      matches "mt798x_atf/mt7986/mt7986-ddr3-ram.config").
+                      Multiple names may be given.  .config suffix is
+                      optional.
 
 Optional:
   VERSION             Firmware version: 2025 | SP1 | SP2        (default: 2025)
@@ -33,13 +42,26 @@ Optional:
 
 Options:
   --help, -h          Show this help message and exit
+
+Examples:
+  ./compile_atf.sh                              # Build all configs
+  ./compile_atf.sh mt7981-ddr3-bga-ram          # Build one config
+  ./compile_atf.sh mt7981-ddr3-bga-ram mt7986-ddr4-ram  # Build two configs
+  ./compile_atf.sh mt7986/mt7986-ddr3-ram       # Build from subdirectory
+  VERSION=SP2 ./compile_atf.sh normal/mt7981-ram  # With env variables
 EOF
 	exit 0
 }
 
-case "${1:-}" in
-	--help|-h) print_help ;;
-esac
+TARGET_CONFIGS=""
+for arg in "$@"; do
+	case "$arg" in
+		--help|-h) print_help ;;
+		*) TARGET_CONFIGS="$TARGET_CONFIGS $arg" ;;
+	esac
+done
+# Strip leading space
+TARGET_CONFIGS="${TARGET_CONFIGS# }"
 
 TOOLCHAIN_ARM=arm-linux-gnueabi-
 TOOLCHAIN_AARCH64=aarch64-linux-gnu-
@@ -106,8 +128,32 @@ if [ -n "$CFG_SUBDIR" ]; then
     done
 fi
 
+# Filter to requested configs when positional arguments are given.
+if [ -n "$TARGET_CONFIGS" ]; then
+    FILTERED_LIST=""
+    for target in $TARGET_CONFIGS; do
+        # Strip optional .config suffix
+        target="${target%.config}"
+        matched=0
+        for cfg_full in $CONFIG_LIST; do
+            cfg_rel="${cfg_full#"$ATFCFG_DIR"/}"
+            cfg_rel_nosuffix="${cfg_rel%.config}"
+            cfg_name_nosuffix="$(basename "$cfg_rel" .config)"
+            if [ "$target" = "$cfg_rel_nosuffix" ] || [ "$target" = "$cfg_name_nosuffix" ]; then
+                FILTERED_LIST="$FILTERED_LIST $cfg_full"
+                matched=1
+            fi
+        done
+        if [ "$matched" -eq 0 ]; then
+            echo "Error: config '$target' not found in '$ATFCFG_DIR'${CFG_SUBDIR:+ or '$ATFCFG_DIR/$CFG_SUBDIR'}"
+            exit 1
+        fi
+    done
+    CONFIG_LIST="$FILTERED_LIST"
+fi
+
 if [ -z "$CONFIG_LIST" ]; then
-    echo "Error: no .config files found in '$ATFCFG_DIR' or '$ATFCFG_DIR/$CFG_SUBDIR'"
+    echo "Error: no .config files found in '$ATFCFG_DIR'${CFG_SUBDIR:+ or '$ATFCFG_DIR/$CFG_SUBDIR'}"
     exit 1
 fi
 
